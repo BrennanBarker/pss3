@@ -24,6 +24,29 @@ function getSignedHeaders(canonicalHeaders) {
     return canonicalHeaders.split('\n').filter(x=>x!='').map(x=>x.split(':')[0]).join(';')
 }
 
+// payloadHash
+// canonicalHeaders(host, payloadHash, amzdate)-- switch on payloadHash
+// canonicalQueryString
+
+// Just go by type?
+// key
+function s3Signature(region, awsAccessKeyId, bucket, payload = 'UNSIGNED-PAYLOAD') {
+    const algorithm = 'AWS4-HMAC-SHA256'
+    const amzdate = (new Date()).toISOString().replaceAll('-', '').replaceAll(':', '').split('.')[0]+'Z'
+    const date = amzdate.split('T')[0]
+    const credentialScope = `${date}/${region}/s3/aws4_request`
+    const credential = `${awsAccessKeyId}/${credentialScope}`
+    const host = `${bucket}.s3.amazonaws.com`
+    if (payload == 'UNSIGNED-PAYLOAD') {
+        const payloadHash = payload
+
+    }
+
+    return { signature, credential, signedHeaders, canonicalQueryString }
+}
+
+
+
 async function s3GetObjectPresignedUrl(bucket, key, region, awsAccessKeyId, awsSecretAccessKey, datetime = new Date(), expiration = 86400) {
     const algorithm = 'AWS4-HMAC-SHA256'
     const amzdate = datetime.toISOString().replaceAll('-', '').replaceAll(':', '').split('.')[0]+'Z'
